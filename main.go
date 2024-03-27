@@ -12,10 +12,11 @@ import (
 	"strings"
 )
 
+var dataFilePath *string = flag.String("data", "PortRoyale3Tool.json", "The path to the data file")
+
 var data *lib.Data
 
 func main() {
-	dataFilePath := flag.String("data", "PortRoyale3Tool.json", "The path to the data file")
 	flag.Parse()
 
 	data = lib.NewData()
@@ -40,6 +41,7 @@ const helpInfo = `Commands:
 * unset <groupIndex> <cityName> ...: remove the association of the given city(s) from the given group
 * remove <cityName>: remove the city by the given name
 * remove <groupIndex>: remove the group by the given index
+* save: save the data immediately
 * help: print the help info about the commands
 * exit: save and exit`
 
@@ -160,6 +162,9 @@ func handleMainMenu(reader *bufio.Reader) (continueLoop bool) {
 		}
 		groupIndex := num
 		data.RemoveGroup(groupIndex)
+
+	case "save":
+		data.Save(*dataFilePath)
 
 	case "help":
 		fmt.Println(helpInfo)
