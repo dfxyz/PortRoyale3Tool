@@ -147,6 +147,7 @@ func (d *Data) ListGroup(index int) {
 		return
 	}
 
+	produceBuildings := make(map[Good]int)
 	overallProduces := make(map[Good]int)
 	overallConsumes := make(map[Good]int)
 	for cityName := range group.Cities {
@@ -158,6 +159,9 @@ func (d *Data) ListGroup(index int) {
 		produces, consumes := city.getGoodDetails()
 		printCityDetail(cityName, city.Buildings, produces, consumes)
 
+		for good, buildingNum := range city.Buildings {
+			produceBuildings[good] += buildingNum
+		}
 		for good, num := range produces {
 			overallProduces[good] += num
 		}
@@ -174,17 +178,21 @@ func (d *Data) ListGroup(index int) {
 	}
 	fmt.Printf("Group [%d] balances:\n", index)
 	for good := range allGoods {
+		buildingNum := produceBuildings[good]
 		produce := overallProduces[good]
 		consume := overallConsumes[good]
-		printOverallGoodDetail(good, produce, consume)
+		printOverallGoodDetail(good, buildingNum, produce, consume)
 		fmt.Println()
 	}
 }
 
-func printOverallGoodDetail(good Good, produce int, consume int) {
+func printOverallGoodDetail(good Good, buidlingNum int, produce int, consume int) {
 	// <goodName>: <balance>(<produceNum>/<consumeNum>)
 	fmt.Printf("\t%s: ", good)
 	printSignedNumWithColor(produce - consume)
+	if buidlingNum > 0 {
+		fmt.Printf("(%d)", buidlingNum)
+	}
 	fmt.Print(" (")
 	printSignedNumWithColor(produce)
 	fmt.Print("/")
